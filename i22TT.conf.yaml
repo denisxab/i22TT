@@ -24,9 +24,3 @@ available_lang:
     fonts:
       - "Aria"
       - "Time New Roman"
-
-  "Russuan_Moskow":
-    # Шрифты
-    fonts:
-      - "Aria"
-      - "Time New Roman"
