@@ -1,0 +1,31 @@
+# Язык по умолчанию
+base_lang: 'Russuan_Moskow'
+
+# Доступные языки
+available_lang:
+    'ru':
+        # Шрифты
+        fonts:
+            - 'Aria'
+            - 'Time New Roman'
+    'en':
+        # Шрифты
+        fonts:
+            - 'Aria'
+            - 'Time New Roman'
+    'uk':
+        # Шрифты
+        fonts:
+            - 'Aria'
+            - 'Time New Roman'
+    'japan':
+        # Шрифты
+        fonts:
+            - 'Aria'
+            - 'Time New Roman'
+
+    'Russuan_Moskow':
+        # Шрифты
+        fonts:
+            - 'Aria'
+            - 'Time New Roman'

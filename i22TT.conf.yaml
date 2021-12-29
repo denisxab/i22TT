@@ -1,6 +1,6 @@
 
 # Язык по умолчанию
-base_lang: "ru"
+base_lang: "Russuan_Moskow"
 
 # Доступные языки
 available_lang:
@@ -25,7 +25,7 @@ available_lang:
       - "Aria"
       - "Time New Roman"
 
-  "japanss":
+  "Russuan_Moskow":
     # Шрифты
     fonts:
       - "Aria"

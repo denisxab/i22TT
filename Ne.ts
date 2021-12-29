@@ -4,6 +4,7 @@ import { readFile } from './helpful';
 
 /*
  * TODO: Документация использования
+ * TODO: Исправить случай когда базовый язык компонента не находиться в списке допустимых языков конфигурации
  * */
 
 const yaml = require('js-yaml');
@@ -72,7 +73,6 @@ export class i22TT_Json {
 	
 	/* Запись `JSON` в компонент */
 	public static writeJsonFile(file_name : string, json : string) : void {
-		
 		fs.writeFileSync(file_name, json);
 	}
 	
@@ -110,7 +110,7 @@ ${in_format_text_file}
 ----------------------
 ${raw_json_translete}
 ----------------------
-@ENDi22TT_MapTranslate*/`;
+@ENDi22TT_MapTranslate*/`.slice(1);
 	}
 	
 	/* Создать `JSON i22TT` из данных компонента */
@@ -192,8 +192,7 @@ ${raw_json_translete}
 		try {
 			text_config = yaml.load(readFile(this.file_conf));
 		} catch (e) {
-			console.log(e);
-			return null;
+			throw `Некорректное оформление YAML файла->${e}`
 		}
 		// Проверяем корректность данных
 		if (valid_json_conf(text_config)) {
@@ -219,17 +218,28 @@ ${raw_json_translete}
 			/i22TT.id_components[\s]*\((?<id_components>\d+)\s*(,\s*['"`]+(?<base_lange>[\w\d]+)['"`]+)*\)/,
 		);
 		// console.log(res)
-		if (res && res.length >= 2 && res.groups) {
-			return {
-				id_components: Number(res.groups['id_components']),
-				base_lange: res.groups['base_lange']
-					? res.groups['base_lange']
-					: this.base_lang,
-			};
+		if (res && res.length >= 2 && res.groups && res.groups['id_components']) {
+			// Получаем язык из компонента или берем из конфигурации.
+			const lang_component : string = res.groups['base_lange'] ? res.groups['base_lange'] : this.base_lang
+			// Если переопределяющий язык в компоненте, допустим в конфигурациях.
+			if (this.base_arr_lange[lang_component] !== undefined) {
+				return {
+					id_components: Number(res.groups['id_components']),
+					base_lange: lang_component,
+				};
+			}
+			throw `
+			Ошибка настройки компонента ${component_file_name}:
+			Язык который вы указали в компоненте - "${lang_component}"  неразрешен в конфигурациях
+			Если вы хотите использовать этот язык, то добавите его в конфигурации
+			`
 		}
-		else {
-			throw `ID компонента ${component_file_name} не найден`;
-		}
+		
+		throw `Настройки компонента ${component_file_name} не найден:
+		'''
+		${JSON.stringify(res, null, 2)}
+		'''
+		Убедитесь в том что вы указали id компонента, и имя языка(на английском без пробелов)`;
 	}
 	
 	/* Поиск слов в тексте */

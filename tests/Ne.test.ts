@@ -166,7 +166,9 @@ describe("Проверка `FindIdComponent`", () => {
 						[
 							`${__dirname}/test_data/test_component/Compant_1_False.tsx`,
 						],
-						[`ID компонента ${__dirname}/test_data/test_component/Compant_1_False.tsx не найден`],
+						[
+							`Настройки компонента ${__dirname}/test_data/test_component/Compant_1_False.tsx не найден: null, убедитесь в том что вы указали id компонента, и имя языка(на английском без пробелов)`
+						],
 						function (_path_comp, _out) {
 							obj_i22TT = new TEST_i22TT_Json(_path_conf)
 							expect(() => obj_i22TT!.FindIdComponent(readFile(_path_comp), _path_comp)).toThrow(_out)
@@ -175,6 +177,43 @@ describe("Проверка `FindIdComponent`", () => {
 			)
 		}
 	)
+	
+	test("Случай когда базовый язык компонента не находиться в списке допустимых языков конфигурации", () => {
+		_.zipWith(
+			[
+				`${__dirname}/test_data/test_conf/i22TT_1.conf.yaml`,
+				`${__dirname}/test_data/test_conf/i22TT_4.conf.yaml`,
+				`${__dirname}/test_data/test_conf/i22TT_5.conf.yaml`,
+			],
+			
+			[`
+			Ошибка настройки компонента ${__dirname}/test_data/test_component/Compant_5.tsx:
+			Язык который вы указали в компоненте - "Russuan_Moskow"  неразрешен в конфигурациях
+			Если вы хотите использовать этот язык, то добавите его в конфигурации
+			`,
+				"",
+				""
+			],
+			
+			function (_path_conf : string, _out : string) {
+				_.zipWith(
+					[
+						`${__dirname}/test_data/test_component/Compant_5.tsx`,
+					],
+					function (_path_comp : string) {
+						/* Обновляем конфигурации */
+						obj_i22TT = new TEST_i22TT_Json(_path_conf)
+						try {
+							obj_i22TT!.FindIdComponent(readFile(_path_comp), _path_comp)
+						} catch (e) {
+							expect(e).toEqual(_out)
+							console.log(e)
+						}
+					})
+			}
+		)
+	})
+	
 })
 
 describe("Проверка `FindTextFromTranslate`", () => {
