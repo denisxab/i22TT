@@ -1,4 +1,3 @@
-
 # Язык по умолчанию
 base_lang: "ru"
 
@@ -19,12 +18,6 @@ available_lang:
     fonts:
       - "Aria"
       - "Time New Roman"
-  "japan":
-    # Шрифты
-    fonts:
-      - "Aria"
-      - "Time New Roman"
-
   "japanss":
     # Шрифты
     fonts:

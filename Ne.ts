@@ -4,7 +4,6 @@ import { readFile } from './helpful';
 
 /*
  * TODO: Документация использования
- *
  * */
 
 const yaml = require('js-yaml');
@@ -13,17 +12,17 @@ const fs = require('fs');
 /* Имя файла с конфигурациями */
 export const CONFIG_FILE_NAME : string = 'i22TT.conf.yaml';
 /* Доступные языки */
-export let AVAILABLE_LANG_SET = new Set(['ru', 'en', 'japan', 'uk']);
-export const AVAILABLE_LANG_ARR = Array.from(AVAILABLE_LANG_SET);
-export type TYPE_AVAILABLE_LANG = typeof AVAILABLE_LANG_ARR[number];
-export type TReadConfig = { base_arr_lange : { [key : string] : string }; base_lang : string } | null
-
+// export let AVAILABLE_LANG_SET = new Set(['ru', 'en', 'japan', 'uk']);
+// export const AVAILABLE_LANG_ARR = Array.from(AVAILABLE_LANG_SET);
+// export type TYPE_AVAILABLE_LANG = typeof AVAILABLE_LANG_ARR[number];
 /* Типы данных */
 export type IFindTextFromTranslate = Array<{
 	hash_int : number;
 	text : string;
 	id : number;
 }>;
+
+export type TReadConfig = { base_arr_lange : { [key : string] : string }; base_lang : string } | null
 
 export interface IFindIdComponent {
 	id_components : number;
@@ -42,14 +41,16 @@ export interface IFileConf {
 	// Основной язык
 	base_lang : string;
 	// Доступные языки
-	available_lang : Array<{
-		// Название языка
-		[key in TYPE_AVAILABLE_LANG] : {
-			// Шрифты для языка
-			fonts? : Array<string>;
-		};
-	}>;
+	available_lang : T_available_lang
 }
+
+type T_available_lang = Array<{
+	// Название языка
+	[key : string] : {
+		// Шрифты для языка
+		fonts? : Array<string>;
+	};
+}>;
 
 export class i22TT_Json {
 	// Создаем переменную с доступными языками
@@ -160,22 +161,16 @@ ${raw_json_translete}
 	protected _redConfig() : TReadConfig {
 		/*	Проверяем корректность конфигурации */
 		const valid_json_conf = (_text_config : IFileConf | null) : boolean => {
+			
+			
 			if (_text_config) {
-				// Проверяем наличие и тип ключей
-				if (
-					_text_config['base_lang'] !== undefined &&
-					typeof _text_config['base_lang'] == 'string' &&
-					// Базовый язык должен быть выбора из доступных языков
-					AVAILABLE_LANG_SET.has(_text_config['base_lang']) &&
-					_text_config['available_lang'] !== undefined &&
-					typeof _text_config['available_lang'] == 'object'
-				) {
+				const base_lang : string = String(_text_config['base_lang'])
+				const available_lang : T_available_lang = _text_config['available_lang']
+				// Проверяем что базовый язык добавлен в доступные языки
+				// @ts-ignore
+				if (available_lang[base_lang]) {
 					// Проверяем языки
 					for (const _x in _text_config['available_lang']) {
-						// Проверяем доступен ли указанный язык
-						if (!AVAILABLE_LANG_SET.has(_x)) {
-							throw `Файл '${this.file_conf}': '${_x}' не допустимый язык`;
-						}
 						// Проверяем правильно ли указано имя ключа
 						if (
 							_text_config['available_lang'][_x]['fonts'] ===
@@ -185,6 +180,9 @@ ${raw_json_translete}
 						}
 					}
 					return true;
+				}
+				else {
+					throw `Файл '${this.file_conf}': Базовый язык '${base_lang}' не добавлен в разрешённые(available_lang) языки`
 				}
 			}
 			return false;
