@@ -4,7 +4,6 @@ import { readFile } from './helpful';
 
 /*
  * TODO: Документация использования
- * TODO: Переопределение базового языка в компоненте `buildJson`
  *
  * */
 
@@ -129,7 +128,6 @@ ${raw_json_translete}
 					_x['id'],
 					{
 						...this.base_arr_lange,
-						// TODO: Язык должен переопределяться
 						...{[setting_component['base_lange']]: _x['text']},
 					},
 				];
@@ -161,7 +159,7 @@ ${raw_json_translete}
 	/* Читаем файла с конфигурациями */
 	protected _redConfig() : TReadConfig {
 		/*	Проверяем корректность конфигурации */
-		function valid_json_conf(_text_config : IFileConf | null) : boolean {
+		const valid_json_conf = (_text_config : IFileConf | null) : boolean => {
 			if (_text_config) {
 				// Проверяем наличие и тип ключей
 				if (
@@ -176,7 +174,7 @@ ${raw_json_translete}
 					for (const _x in _text_config['available_lang']) {
 						// Проверяем доступен ли указанный язык
 						if (!AVAILABLE_LANG_SET.has(_x)) {
-							throw `'${_x}' не допустимый язык`;
+							throw `Файл '${this.file_conf}': '${_x}' не допустимый язык`;
 						}
 						// Проверяем правильно ли указано имя ключа
 						if (

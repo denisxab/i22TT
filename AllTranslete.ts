@@ -31,7 +31,7 @@ class i22TT {
 		return hash_number
 	}
 	
-	/* Получаем текст из `JSX`, и ищем перевод из словаря, котоырй мы получем от сервера */
+	/* Получаем текст из `JSX`, и ищем перевод из словаря, который мы получим от сервера */
 	public static get(in_text_translate : string, id_text : number = 1) : string {
 		console.log("ТЕКСТ ДЛЯ ПЕРЕВОДА: ", in_text_translate, "\nID ТЕКСТА: ", id_text)
 		return in_text_translate
@@ -43,9 +43,9 @@ class i22TT {
 		// i22TT.get = i22TT.__get
 	}
 	
-	/* Указать id компанента */
+	/* Указать id компонента */
 	public static id_components(id_components : number, base_lang : string) : void {
-		/* Получем ID используемого компанента */
+		/* Получим ID используемого компонента */
 		console.log("ID COMPONENT: ", id_components)
 		console.log("Base lang: ", base_lang)
 	}

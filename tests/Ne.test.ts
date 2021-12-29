@@ -75,10 +75,12 @@ describe("Тест с конфигурациями, `getConfig` `redConfig`", ()
 			[
 				`${__dirname}/test_data/test_conf/i22TT_1_False_.conf.yaml`,
 				`${__dirname}/test_data/test_conf/i22TT_3_False_.conf.yaml`,
+				`${__dirname}/test_data/test_conf/i22TT_5_False.conf.yaml`,
 			],
 			[
 				`Неверные данные конфигурации ${__dirname}/test_data/test_conf/i22TT_1_False_.conf.yaml`,
-				`Неверные данные конфигурации ${__dirname}/test_data/test_conf/i22TT_3_False_.conf.yaml`
+				`Неверные данные конфигурации ${__dirname}/test_data/test_conf/i22TT_3_False_.conf.yaml`,
+				`Файл '${__dirname}/test_data/test_conf/i22TT_5_False.conf.yaml': 'japanss' не допустимый язык`,
 			],
 			function (_input, _out) {
 				expect(() => new TEST_i22TT_Json(_input)).toThrow(_out)
