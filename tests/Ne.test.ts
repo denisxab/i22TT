@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { i22TT_Json, IFileConf, IFindIdComponent, IFindTextFromTranslate, TReadConfig } from "../Ne";
+import { i22TT_Json, IFileConf, IFindIdComponent, IFindTextFromTranslate, TReadConfig } from "../pull_data _from_component/pull_data";
 import { readFile } from "../helpful";
 
 const fs = require('fs');

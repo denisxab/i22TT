@@ -1,6 +1,6 @@
-import { i22TT } from './AllTranslete';
+import { i22TT } from '../AllTranslete';
 import { text } from 'stream/consumers';
-import { readFile } from './helpful';
+import { readFile } from '../helpful';
 
 /*
  * TODO: Документация использования
