@@ -40,8 +40,7 @@ export default HomePage;
 
 /* Ghb */
 // asdds
-/*
-@i22TT_MapTranslate
+/*@i22TT_MapTranslate
 ----------------------
 {
   "id_components": 33,
@@ -113,5 +112,4 @@ export default HomePage;
   }
 }
 ----------------------
-@ENDi22TT_MapTranslate
-*/
+@ENDi22TT_MapTranslate*/

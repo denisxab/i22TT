@@ -8,6 +8,7 @@ import { readFile } from './helpful';
 
 const yaml = require('js-yaml');
 const fs = require('fs');
+const argsTerminal = require('yargs').argv;
 
 /* Имя файла с конфигурациями */
 export const CONFIG_FILE_NAME : string = 'i22TT.conf.yaml';
@@ -64,7 +65,7 @@ export class i22TT_Json {
 		// TODO: Создать проверку того что файл с расширением `yaml` / `yml`
 		this.file_conf = config_file_name;
 		// Устанавливаем конфигурации класса из файла
-		const res : { base_arr_lange : { [p : string] : string }; base_lang : string } = this._setConfig()
+		const res : { base_arr_lange : { [p : string] : string }; base_lang : string } = this._initConfig()
 		this.base_arr_lange = res["base_arr_lange"]
 		this.base_lang = res["base_lang"]
 	}
@@ -100,18 +101,16 @@ export class i22TT_Json {
 	protected _formatJsonFromWriteFile(component_file_name : string, raw_json_translete : string) : string {
 		let in_text_file : string = readFile(component_file_name);
 		let in_format_text_file = in_text_file.replace(
-			/\/\* @i22TT_MapTranslate\n[\s\w\W]+@ENDi22TT_MapTranslate\n\s*\*\//g,
+			/\/\*@i22TT_MapTranslate\n[\s\w\W]+@ENDi22TT_MapTranslate\*\//g,
 			'',
 		);
 		return `
 ${in_format_text_file}
-/*
-@i22TT_MapTranslate
+/*@i22TT_MapTranslate
 ----------------------
 ${raw_json_translete}
 ----------------------
-@ENDi22TT_MapTranslate
-*/`;
+@ENDi22TT_MapTranslate*/`;
 	}
 	
 	/* Создать `JSON i22TT` из данных компонента */
@@ -146,7 +145,7 @@ ${raw_json_translete}
 	}
 	
 	/* Прочитать конфигурации из файла и сохранить их в переменные */
-	protected _setConfig() : { base_arr_lange : { [p : string] : string }; base_lang : string } {
+	protected _initConfig() : { base_arr_lange : { [p : string] : string }; base_lang : string } {
 		// Читаем файл с конфигурациями
 		const resConf : TReadConfig = this._redConfig();
 		if (resConf) {
@@ -257,14 +256,41 @@ ${raw_json_translete}
 		}
 		return res;
 	}
+}
+
+
+function verificationArgs(argsTerminal : any) {
+	/*
+	 * --conf =  Путь к файлу с конфигурациями
+	 * --save = Сохранить результат в текущий компонент
+	 * --component = Переопределить компонент
+	 * --no_output = Не отображать результат в консоль
+	 */
 	
+	// Путь к файлу с конфигурациями
+	const conf : string = argsTerminal['conf'] ? argsTerminal['conf'] : CONFIG_FILE_NAME
+	// Путь к компоненту
+	const component : string = argsTerminal['component'] ? argsTerminal['component'] : argsTerminal['_'][0]
+	// Нужно ли сохранять результат в текущий компонент
+	const isSave : boolean = argsTerminal['save']
+	// Нужно ли выводить данные в терминал
+	const isOutput : boolean = !argsTerminal["no_output"]
+	
+	// Логика
+	const i22TT = new i22TT_Json(conf);
+	const res = i22TT.run(component)
+	if (isOutput) {
+		console.log(res)
+	}
+	if (isSave) {
+		fs.writeFileSync(component, res)
+	}
 	
 }
 
 if (require.main === module) {
-	if (process.argv.length >= 2) {
-		console.log(process.argv[2]);
-		const res = new i22TT_Json(CONFIG_FILE_NAME);
-		console.log(res.run(process.argv[2]));
+	console.log(argsTerminal)
+	if (argsTerminal) {
+		verificationArgs(argsTerminal)
 	}
 }

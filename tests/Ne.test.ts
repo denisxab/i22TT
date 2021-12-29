@@ -2,8 +2,6 @@ import * as _ from "lodash";
 import { i22TT_Json, IFileConf, IFindIdComponent, IFindTextFromTranslate, TReadConfig } from "../Ne";
 import { readFile } from "../helpful";
 
-const fs = require('fs');
-
 
 class TEST_i22TT_Json extends i22TT_Json {
 	
@@ -18,8 +16,8 @@ class TEST_i22TT_Json extends i22TT_Json {
 		
 	}
 	
-	public setConfig() : { base_arr_lange : { [p : string] : string }; base_lang : string } {
-		return this._setConfig()
+	public initConfig() : { base_arr_lange : { [p : string] : string }; base_lang : string } {
+		return this._initConfig()
 		
 	}
 	
@@ -43,7 +41,7 @@ class TEST_i22TT_Json extends i22TT_Json {
 let obj_i22TT : TEST_i22TT_Json | undefined
 
 
-describe("Тест с конфигурациями, `getConfig` `redConfig`", () => {
+describe("Тест с конфигурациями, `initConfig` `redConfig`", () => {
 	// Эта функция будет вызваться каждый раз при функции теста
 	beforeEach(() => {
 		obj_i22TT = undefined
@@ -330,14 +328,14 @@ describe("Проверка сборки в `JSON` `buildJson`", () => {
 })
 
 
-describe("", () => {
+describe("Финальная проверка `run`", () => {
 	
 	// Эта функция будет вызваться каждый раз при функции теста
 	beforeEach(() => {
 		obj_i22TT = undefined
 	})
 	
-	test("", () => {
+	test("Проверка `run`", () => {
 		let tmp = 1
 		
 		_.zipWith(

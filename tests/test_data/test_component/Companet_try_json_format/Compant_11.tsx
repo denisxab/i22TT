@@ -36,8 +36,7 @@ export default HomePage;
 
 
 
-/*
-@i22TT_MapTranslate
+/*@i22TT_MapTranslate
 ----------------------
 {
   "id_components": 265,
@@ -102,5 +101,4 @@ export default HomePage;
   }
 }
 ----------------------
-@ENDi22TT_MapTranslate
-*/
+@ENDi22TT_MapTranslate*/

@@ -33,8 +33,7 @@ function HomePage(props : any) {
 }
 
 export default HomePage;
-/*
-@i22TT_MapTranslate
+/*@i22TT_MapTranslate
 ----------------------
 {
   "id_components": 22,
@@ -99,5 +98,4 @@ export default HomePage;
   }
 }
 ----------------------
-@ENDi22TT_MapTranslate
-*/
+@ENDi22TT_MapTranslate*/
