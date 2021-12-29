@@ -4,6 +4,7 @@ import { readFile } from '../helpful';
 
 /*
  * TODO: Документация использования
+ * TODO: Создание общего файла с карами перевода со всех компонентов
  * */
 
 const yaml = require('js-yaml');
