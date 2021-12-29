@@ -1,0 +1,25 @@
+# Язык по умолчанию
+    base_lang: "неверный язык"
+
+    # Доступные языки
+av    ailable_lang:
+          "ru":
+            # Шрифты
+            fonts:
+      - "Aria"
+        - "Time New Roman"
+    "en":
+      # Шрифты
+      fonts:
+        - "Aria"
+        - "Time New Roman"
+    "uk":
+      # Шрифты
+      fonts:
+        - "Aria"
+        - "Time New Roman"
+    "japan":
+      # Шрифты
+      fonts:
+        - "Aria"
+        - "Time New Roman"

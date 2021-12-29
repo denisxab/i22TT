@@ -2,7 +2,7 @@
 import assert from "assert";
 import * as _ from "lodash";
 import { i22TT_Json, IFileConf, IFindIdComponent } from "../Ne"
-import { redFile } from "../helpful";
+import { readFile } from "../helpful";
 
 const fs = require('fs')
 const path = require("path");
@@ -14,7 +14,7 @@ function test_writeJson() {
 `
 	fs.writeFileSync(`${__dirname}/Compant_test.tsx`, try_text);
 	const res = new i22TT_Json(`${__dirname}/Compant_test.tsx`)
-	i22TT_Json.writeJson(res.i22TT_json, `${__dirname}/Compant_test.tsx`)
+	i22TT_Json.writeJsonFile(res.i22TT_json, `${__dirname}/Compant_test.tsx`)
 }
 
 /* Проверяем коректность получения конфигураций из файла */
@@ -33,7 +33,7 @@ function test_getConfig() {
 			"ru", "en", "japan",
 		], function (_path : string, _base_arr_lange : { [key : string] : string }, _base_lang : string) {
 			// Читаем файл с конфигурациями
-			i22TT_Json.getConfig(_path);
+			i22TT_Json._setConfig(_path);
 			// console.log(i22TT_Json.base_arr_lange)
 			// console.log(i22TT_Json.base_lang)
 			// Проверям коректность данных
@@ -70,7 +70,7 @@ function test_FindIdComponent() {
 		]
 		, function (_path_conf : string, _try_text_arr : Array<{ id_components : number, base_lange : string }>,) {
 			/* Обновялем конфигурации */
-			i22TT_Json.getConfig(_path_conf);
+			i22TT_Json._setConfig(_path_conf);
 			/* Ищем данные о компаненте */
 			_.zipWith([
 					`${__dirname}/test_data/test_component/Compant_1.tsx`,
@@ -81,7 +81,7 @@ function test_FindIdComponent() {
 				_try_text_arr,
 				function (_path_comp : string, _try_text : { id_components : number, base_lange : string }) {
 					// Результат функции
-					const res_fun : IFindIdComponent = i22TT_Json.FindIdComponent(redFile(_path_comp), _path_comp)
+					const res_fun : IFindIdComponent = i22TT_Json._FindIdComponent(readFile(_path_comp), _path_comp)
 					// console.log(_path_conf, _path_comp, res_fun)
 					assert.equal(_.isEqual(res_fun, _try_text), true, "Компанент не найден")
 				})
@@ -100,7 +100,7 @@ function test_FindTextFromTranslate() {
 		],
 		function (_path_conf : string,) {
 			/* Обновялем конфигурации */
-			i22TT_Json.getConfig(_path_conf);
+			i22TT_Json._setConfig(_path_conf);
 			/* Ищем данные о компаненте */
 			_.zipWith(
 				[
@@ -144,7 +144,7 @@ function test_FindTextFromTranslate() {
 					{text: 'День мир5', id: 1, hash_int: 7643}
 				]],
 				function (_path_comp : string, _try_text : Array<{ text : string, id : number, hash_int : number }>) {
-					const res = i22TT_Json.FindTextFromTranslate(redFile(_path_comp), _path_comp)
+					const res = i22TT_Json._FindTextFromTranslate(readFile(_path_comp), _path_comp)
 					// fs.appendFileSync("tmp.json", JSON.stringify(res))
 					// console.log(_path_conf, _path_comp, res)
 					assert.equal(_.isEqual(res, _try_text), true, "")
@@ -164,10 +164,10 @@ function test_buildJson() {
 			`${__dirname}/test_data/test_conf/i22TT_2.conf.yaml`,
 			`${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
 		],
-		JSON.parse(redFile(`${__dirname}/test_data/data_test_FindIdComponent.json`))
+		JSON.parse(readFile(`${__dirname}/test_data/data_test_FindIdComponent.json`))
 		, function (_path_conf : string, _try_text_arr : Array<IFileConf>,) {
 			/* Обновялем конфигурации */
-			i22TT_Json.getConfig(_path_conf);
+			i22TT_Json._setConfig(_path_conf);
 			/* Ищем данные о компаненте */
 			_.zipWith([
 					`${__dirname}/test_data/test_component/Compant_1.tsx`,
@@ -178,11 +178,11 @@ function test_buildJson() {
 				_try_text_arr,
 				function (_path_comp : string, _try_text : IFileConf) {
 					// Тестовый набор данных
-					const tes_FindTextFromTranslate = i22TT_Json.FindTextFromTranslate(redFile(_path_comp), _path_comp)
+					const tes_FindTextFromTranslate = i22TT_Json._FindTextFromTranslate(readFile(_path_comp), _path_comp)
 					// Тестовый набор данных
-					const test_FindIdComponent = i22TT_Json.FindIdComponent(redFile(_path_comp), _path_comp)
+					const test_FindIdComponent = i22TT_Json._FindIdComponent(readFile(_path_comp), _path_comp)
 					// Верный ответ
-					const res = i22TT_Json.buildJson(test_FindIdComponent, tes_FindTextFromTranslate)
+					const res = i22TT_Json._buildJson(test_FindIdComponent, tes_FindTextFromTranslate)
 					console.log(_path_conf, _path_comp, res)
 					assert.equal(_.isEqual(JSON.parse(res), _try_text), true, "")
 					
