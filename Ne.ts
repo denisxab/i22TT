@@ -4,12 +4,12 @@ import { readFile } from './helpful';
 
 /*
  * TODO: Документация использования
- * TODO: Исправить случай когда базовый язык компонента не находиться в списке допустимых языков конфигурации
  * */
 
 const yaml = require('js-yaml');
 const fs = require('fs');
 const argsTerminal = require('yargs').argv;
+const path = require('path')
 
 /* Имя файла с конфигурациями */
 export const CONFIG_FILE_NAME : string = 'i22TT.conf.yaml';
@@ -63,7 +63,9 @@ export class i22TT_Json {
 	public file_conf : string;
 	
 	constructor(config_file_name : string) {
-		// TODO: Создать проверку того что файл с расширением `yaml` / `yml`
+		if (path.extname(config_file_name).search(/ya*ml/) === -1) {
+			throw `Неверное расширение файла: ${config_file_name}`
+		}
 		this.file_conf = config_file_name;
 		// Устанавливаем конфигурации класса из файла
 		const res : { base_arr_lange : { [p : string] : string }; base_lang : string } = this._initConfig()
@@ -71,10 +73,6 @@ export class i22TT_Json {
 		this.base_lang = res["base_lang"]
 	}
 	
-	/* Запись `JSON` в компонент */
-	public static writeJsonFile(file_name : string, json : string) : void {
-		fs.writeFileSync(file_name, json);
-	}
 	
 	public run(component_file_name : string) : string {
 		// Получаем текст компонента
@@ -160,8 +158,6 @@ ${raw_json_translete}
 	protected _redConfig() : TReadConfig {
 		/*	Проверяем корректность конфигурации */
 		const valid_json_conf = (_text_config : IFileConf | null) : boolean => {
-			
-			
 			if (_text_config) {
 				const base_lang : string = String(_text_config['base_lang'])
 				const available_lang : T_available_lang = _text_config['available_lang']
@@ -192,7 +188,7 @@ ${raw_json_translete}
 		try {
 			text_config = yaml.load(readFile(this.file_conf));
 		} catch (e) {
-			throw `Некорректное оформление YAML файла->${e}`
+			throw `Некорректное оформление YAML файла: "${this.file_conf}" ->${e}`
 		}
 		// Проверяем корректность данных
 		if (valid_json_conf(text_config)) {
@@ -231,6 +227,7 @@ ${raw_json_translete}
 			throw `
 			Ошибка настройки компонента ${component_file_name}:
 			Язык который вы указали в компоненте - "${lang_component}"  неразрешен в конфигурациях
+			${this.file_conf}
 			Если вы хотите использовать этот язык, то добавите его в конфигурации
 			`
 		}

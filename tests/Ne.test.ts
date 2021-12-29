@@ -2,6 +2,8 @@ import * as _ from "lodash";
 import { i22TT_Json, IFileConf, IFindIdComponent, IFindTextFromTranslate, TReadConfig } from "../Ne";
 import { readFile } from "../helpful";
 
+const fs = require('fs');
+
 
 class TEST_i22TT_Json extends i22TT_Json {
 	
@@ -73,14 +75,19 @@ describe("Тест с конфигурациями, `initConfig` `redConfig`", (
 			[
 				`${__dirname}/test_data/test_conf/i22TT_1_False_.conf.yaml`,
 				`${__dirname}/test_data/test_conf/i22TT_3_False_.conf.yaml`,
-			
+				`${__dirname}/test_data/test_conf/i22TT_6_False_.conf.yaml`,
 			],
 			[
-				`Файл '${__dirname}/test_data/test_conf/i22TT_1_False_.conf.yaml': Базовый язык 'неверный язык' не добавлен в разрешённые(available_lang) языки`,
-				`Неверные данные конфигурации ${__dirname}/test_data/test_conf/i22TT_3_False_.conf.yaml`,
+				/Файл[\w\W]+Базовый язык 'неверный язык' не добавлен в разрешённые\(available_lang\) язык/,
+				/Некорректное оформление YAML файла:[\w\W]+YAMLException[\w\W]+/,
+				/Неверные данные конфигурации[\w\W]+/,
 			],
 			function (_input, _out) {
-				expect(() => new TEST_i22TT_Json(_input)).toThrow(_out)
+				try {
+					new TEST_i22TT_Json(_input)
+				} catch (e) {
+					expect(e).toMatch(_out)
+				}
 			})
 	})
 	
@@ -93,6 +100,52 @@ describe("Тест с конфигурациями, `initConfig` `redConfig`", (
 			
 			function (_input, _out) {
 				expect(() => new TEST_i22TT_Json(_input)).toThrow(_out)
+			})
+	})
+	
+	
+	test("Проверка конструктора `i22TT`, на то чтобы он не допускал файлы неподходящего разрешения", () => {
+		_.zipWith(
+			[
+				"test.txt",
+				"tds1est.csv",
+				"tsqqdest.mp3",
+				"tsdest.yasml",
+				"tsqqdest.yml",
+			],
+			[
+				/Неверное расширение файла: test.txt/,
+				/Неверное расширение файла: tds1est.csv/,
+				/Неверное расширение файла: tsqqdest.mp3/,
+				/./,
+				/./,
+			]
+			,
+			function (_input, _out) {
+				try {
+					obj_i22TT = new TEST_i22TT_Json(_input)
+				} catch (e) {
+					expect(e).toMatch(_out)
+				}
+			})
+	})
+	
+	test("Проверка конструктора `i22TT`, на то чтобы он допускал файлы подходящего разрешения", () => {
+		_.zipWith(
+			[
+				"tsdest.yaml",
+				"tsqqdest.yml",
+			],
+			[
+				/Некорректное оформление YAML файла[\w\W]+/,
+				/Некорректное оформление YAML файла[\w\W]+/,
+			],
+			function (_input, _out) {
+				try {
+					obj_i22TT = new TEST_i22TT_Json(_input)
+				} catch (e) {
+					expect(e).toMatch(_out)
+				}
 			})
 	})
 })
@@ -113,7 +166,7 @@ describe("Проверка `FindIdComponent`", () => {
 			[
 				`${__dirname}/test_data/test_conf/i22TT_1.conf.yaml`,
 				`${__dirname}/test_data/test_conf/i22TT_2.conf.yaml`,
-				`${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
+				// `${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
 			],
 			[[
 				{id_components: 22, base_lange: 'ru'},
@@ -125,11 +178,6 @@ describe("Проверка `FindIdComponent`", () => {
 				{id_components: 33, base_lange: "en"},
 				{id_components: 265, base_lange: 'en'},
 				{id_components: 3265, base_lange: 'en'},
-			], [
-				{id_components: 22, base_lange: 'ru'},
-				{id_components: 33, base_lange: "en"},
-				{id_components: 265, base_lange: 'japan'},
-				{id_components: 3265, base_lange: 'japan'},
 			]
 			]
 			, function (_path_conf : string, _try_text_arr : Array<{ id_components : number, base_lange : string }>,) {
@@ -167,11 +215,15 @@ describe("Проверка `FindIdComponent`", () => {
 							`${__dirname}/test_data/test_component/Compant_1_False.tsx`,
 						],
 						[
-							`Настройки компонента ${__dirname}/test_data/test_component/Compant_1_False.tsx не найден: null, убедитесь в том что вы указали id компонента, и имя языка(на английском без пробелов)`
+							/Настройки компонента[\w\W]+не найден:[\w\W]+Убедитесь в том что вы указали id компонента, и имя языка\(на английском без пробелов\)/
 						],
 						function (_path_comp, _out) {
 							obj_i22TT = new TEST_i22TT_Json(_path_conf)
-							expect(() => obj_i22TT!.FindIdComponent(readFile(_path_comp), _path_comp)).toThrow(_out)
+							try {
+								obj_i22TT!.FindIdComponent(readFile(_path_comp), _path_comp)
+							} catch (e) {
+								expect(e).toMatch(_out)
+							}
 						})
 				}
 			)
@@ -189,6 +241,7 @@ describe("Проверка `FindIdComponent`", () => {
 			[`
 			Ошибка настройки компонента ${__dirname}/test_data/test_component/Compant_5.tsx:
 			Язык который вы указали в компоненте - "Russuan_Moskow"  неразрешен в конфигурациях
+			${__dirname}/test_data/test_conf/i22TT_1.conf.yaml
 			Если вы хотите использовать этот язык, то добавите его в конфигурации
 			`,
 				"",
@@ -207,7 +260,6 @@ describe("Проверка `FindIdComponent`", () => {
 							obj_i22TT!.FindIdComponent(readFile(_path_comp), _path_comp)
 						} catch (e) {
 							expect(e).toEqual(_out)
-							console.log(e)
 						}
 					})
 			}
@@ -324,17 +376,14 @@ describe("Проверка сборки в `JSON` `buildJson`", () => {
 	})
 	
 	test("Проверка `buildJson` ", () => {
-		// let tmp : any[] = []
 		_.zipWith(
 			[
 				`${__dirname}/test_data/test_conf/i22TT_1.conf.yaml`,
 				`${__dirname}/test_data/test_conf/i22TT_2.conf.yaml`,
-				`${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
+				// `${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
 			],
 			JSON.parse(readFile(`${__dirname}/test_data/data_test_FindIdComponent.json`))
 			, function (_path_conf : string, _try_text_arr : Array<IFileConf>,) {
-				
-				// tmp.push([])
 				/* Ищем данные о компоненте */
 				_.zipWith([
 						`${__dirname}/test_data/test_component/Compant_1.tsx`,
@@ -354,13 +403,49 @@ describe("Проверка сборки в `JSON` `buildJson`", () => {
 						const res = obj_i22TT.buildJson(test_FindIdComponent, tes_FindTextFromTranslate)
 						// console.log(_path_conf, _path_comp, res)
 						// console.log(JSON.parse(res))
-						// tmp[tmp.length-1].push(JSON.parse(res))
 						expect(JSON.parse(res)).toEqual(_try_text)
 					})
 			}
 		)
-		// fs.writeFileSync("/home/denis/WebstormProjects/i22TT/tests/test_data/data_test_FindIdComponent.json",JSON.stringify(tmp))
 		
+		function writeNewData() {
+			let tmp : any[] = []
+			_.zipWith(
+				[
+					`${__dirname}/test_data/test_conf/i22TT_1.conf.yaml`,
+					`${__dirname}/test_data/test_conf/i22TT_2.conf.yaml`,
+					// `${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
+				],
+				
+				function (_path_conf : string) {
+					
+					tmp.push([])
+					/* Ищем данные о компоненте */
+					_.zipWith([
+							`${__dirname}/test_data/test_component/Compant_1.tsx`,
+							`${__dirname}/test_data/test_component/Compant_2.tsx`,
+							`${__dirname}/test_data/test_component/Compant_3.tsx`,
+							`${__dirname}/test_data/test_component/Compant_4.tsx`,
+						],
+						
+						function (_path_comp : string) {
+							/* Обновляем конфигурации */
+							obj_i22TT = new TEST_i22TT_Json(_path_conf)
+							// Тестовый набор данных
+							const tes_FindTextFromTranslate = obj_i22TT.FindTextFromTranslate(readFile(_path_comp), _path_comp)
+							// Тестовый набор данных
+							const test_FindIdComponent = obj_i22TT.FindIdComponent(readFile(_path_comp), _path_comp)
+							// Верный ответ
+							const res = obj_i22TT.buildJson(test_FindIdComponent, tes_FindTextFromTranslate)
+							// console.log(_path_conf, _path_comp, res)
+							// console.log(JSON.parse(res))
+							tmp[tmp.length - 1].push(JSON.parse(res))
+							// expect(JSON.parse(res)).toEqual(_try_text)
+						})
+				}
+			)
+			fs.writeFileSync("/home/denis/WebstormProjects/i22TT/tests/test_data/data_test_FindIdComponent.json", JSON.stringify(tmp))
+		}
 	})
 	
 	
@@ -381,7 +466,7 @@ describe("Финальная проверка `run`", () => {
 			[
 				`${__dirname}/test_data/test_conf/i22TT_1.conf.yaml`,
 				`${__dirname}/test_data/test_conf/i22TT_2.conf.yaml`,
-				`${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
+				// `${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
 			],
 			
 			// Верные ответы

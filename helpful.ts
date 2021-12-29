@@ -9,9 +9,8 @@ export function readFile(file_name : string) : string {
 	}
 }
 
-export type T_parseArgsTerminal = {
-	node : string;
-	other : Array<string>;
-	self_path : string;
+/* Запись в файл */
+export function writeJsonFile(file_name : string, text : string) : void {
+	fs.writeFileSync(file_name, text);
 }
 
