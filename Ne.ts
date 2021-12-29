@@ -27,7 +27,7 @@ export type IFindTextFromTranslate = Array<{
 
 export interface IFindIdComponent {
 	id_components : number;
-	base_lange : string;
+	base_lange : string | null;
 }
 
 export interface i22TTJson {
@@ -53,9 +53,9 @@ export interface IFileConf {
 
 export class i22TT_Json {
 	// Создаем переменную с достпуными языками
-	public static base_arr_lange : { [key : string] : string };
+	public static base_arr_lange : { [key : string] : string } | null;
 	// Создаем переменную с базавым языком
-	public static base_lang : string;
+	public static base_lang : string | null;
 	// Данные о компаненте
 	public component : IFindIdComponent;
 	// Список слов
@@ -161,14 +161,14 @@ export class i22TT_Json {
 				_x['id'],
 				{
 					...i22TT_Json.base_arr_lange,
-					...{[i22TT_Json.base_lang]: _x['text']},
+					...{[i22TT_Json.base_lang!]: _x['text']},
 				},
 			];
 		}
 		// Создаем полноценный обьект
 		const res_json : i22TTJson = {
 			id_components: component['id_components'],
-			base_lange: component['base_lange'],
+			base_lange: component['base_lange']!,
 			...obj_words,
 		};
 		return JSON.stringify(res_json, null, 2);
@@ -204,6 +204,8 @@ ${json}
 				if (
 					text_config['base_lang'] !== undefined &&
 					typeof text_config['base_lang'] == 'string' &&
+					// Базовый язык должен быть выбра из доступных языков
+					AVAILABLE_LANG_SET.has(text_config['base_lang']) &&
 					text_config['available_lang'] !== undefined &&
 					typeof text_config['available_lang'] == 'object'
 				) {

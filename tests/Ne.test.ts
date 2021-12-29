@@ -5,7 +5,8 @@ import { i22TT_Json } from "../Ne";
 describe("Тест с конфигурациями", () => {
 	// Функция будет запущена одина раз (конструктор)
 	beforeAll(() => {
-	
+		i22TT_Json.base_arr_lange = null
+		i22TT_Json.base_lang = null
 	})
 	// Эта функция будет вызваться каждый раз при функции теста
 	beforeEach(() => {
@@ -32,6 +33,32 @@ describe("Тест с конфигурациями", () => {
 				expect(i22TT_Json.base_lang).toEqual(_base_lang)
 			})
 	})
+	
+	test("Проверка возникновенияя ошибки при некоректныой конфигурации", () => {
+		_.zipWith(
+			[
+				`${__dirname}/test_data/test_conf/i22TT_1_False_.conf.yaml`,
+			],
+			[[null, null]],
+			function (_input, _out) {
+				i22TT_Json.getConfig(_input)
+				
+				expect(i22TT_Json.base_lang).toEqual(_out[0])
+				expect(i22TT_Json.base_arr_lange).toEqual(_out[1])
+			})
+	})
+	
+	test("Проверка реакции на некоректное оформление", () => {
+		_.zipWith(
+			[
+				`${__dirname}/test_data/test_conf/i22TT_2_False_.conf.yaml`,
+			],
+			[`'uk' не верный ключ "fonts"`],
+			function (_input, _out) {
+				expect(() => i22TT_Json.getConfig(_input)).toThrow(_out)
+			})
+	})
+	
 })
 
 
