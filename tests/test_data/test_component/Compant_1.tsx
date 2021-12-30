@@ -13,8 +13,8 @@ function HomePage(props : any) {
 	return (
 		<div>
 			{i22TT.get("Привет мир4")}
-			<h1>{i22TT.get("Привет мир64")}</h1>
-			{i22TT.get("Привет мир45",  62)}
+			<h1>{i22TT.get("Привет мир64",1,231)}</h1>
+			{i22TT.get("Привет мир45",  62, 123123)}
 			{i22TT.get("День мир5")}
 			<Container>
 				<Row>

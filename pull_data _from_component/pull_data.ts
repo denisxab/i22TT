@@ -1,5 +1,4 @@
 import { i22TT } from '../AllTranslete';
-import { text } from 'stream/consumers';
 import { readFile } from '../helpful';
 
 /*
@@ -12,42 +11,34 @@ const fs = require('fs');
 const argsTerminal = require('yargs').argv;
 const path = require('path')
 
-/* Имя файла с конфигурациями */
-export const CONFIG_FILE_NAME : string = 'i22TT.conf.yaml';
-/* Доступные языки */
-// export let AVAILABLE_LANG_SET = new Set(['ru', 'en', 'japan', 'uk']);
-// export const AVAILABLE_LANG_ARR = Array.from(AVAILABLE_LANG_SET);
-// export type TYPE_AVAILABLE_LANG = typeof AVAILABLE_LANG_ARR[number];
-/* Типы данных */
-export type IFindTextFromTranslate = Array<{
-	hash_int : number;
-	text : string;
-	id : number;
-}>;
 
-export type TReadConfig = { base_arr_lange : { [key : string] : string }; base_lang : string } | null
+export type T_DictTextTransleteComponent = {
+	[key : string] : [string, string]
+};
 
-export interface IFindIdComponent {
+export type T_Config = { base_arr_lange : { [key : string] : string }; base_lang : string } | null
+
+export type T_SettingsComponent = {
 	id_components : number;
 	base_lange : string;
 }
 
-export interface i22TTJson {
+export type T_Mapi22TTJson = {
 	id_components : number;
 	base_lange : string;
-	words : {
-		[key : number] : [string, number, { [key : string] : string }];
-	};
+	words : T_i22Json_word
 }
+type T_i22Json_word = { [key : string] : T_i22Json_word_val; }
+type T_i22Json_word_val = [string, string, { [key : string] : string }]
 
-export interface IFileConf {
+export type T_FileConfig = {
 	// Основной язык
 	base_lang : string;
 	// Доступные языки
-	available_lang : T_available_lang
+	available_lang : T_AvailableLang
 }
 
-type T_available_lang = Array<{
+type T_AvailableLang = Array<{
 	// Название языка
 	[key : string] : {
 		// Шрифты для языка
@@ -55,7 +46,13 @@ type T_available_lang = Array<{
 	};
 }>;
 
+
+/* Имя файла с конфигурациями */
+export const CONFIG_FILE_NAME : string = 'i22TT.conf.yaml';
+
+
 export class i22TT_Json {
+	
 	// Создаем переменную с доступными языками
 	public base_arr_lange : { [key : string] : string };
 	// Создаем переменную с базовым языком
@@ -64,6 +61,7 @@ export class i22TT_Json {
 	public file_conf : string;
 	
 	constructor(config_file_name : string) {
+		// Проверка расширения формата конфигурации
 		if (path.extname(config_file_name).search(/ya*ml/) === -1) {
 			throw `Неверное расширение файла: ${config_file_name}`
 		}
@@ -74,37 +72,142 @@ export class i22TT_Json {
 		this.base_lang = res["base_lang"]
 	}
 	
-	
+	/* Запуск скрипта */
 	public run(component_file_name : string) : string {
-		// Получаем текст компонента
+		/*
+		 * 0. Чтение и парсинг конфигурации                                     >(Конструктор())
+		 * 1. Чтение текста и парсинг настроек компонента                       >(this._FindIdComponent())
+		 * 2. Форматирование вызова функции `i22TT.get` в тексте компонента     >(this._formatTextTranslate())
+		 *  2.1. В конце каждой итерации нужно формировать объект со словами    >(obj_text_translete)
+		 * 3. Получить карту перевода компонента и десериализовать из `json`    >(this._find_i22TT_MapTranslate())
+		 *  if False: создать новую карту                                       >(this._buildNewMap())
+		 *  if True: объединить данные из текущего компонента с данными в карте >(this._mergeMap())
+		 *      - не трогать слова с одинаковым хешем
+		 *      - добавлять новые слова в карту
+		 *      - не добавлять бесхозные хеш
+		 * 4. Собрать детали компонента воедино                                 >(this._formatJsonFromWriteFile)
+		 */
+		
+		// 1.
 		const text_component : string = readFile(component_file_name);
-		// Получить `ID` из текста компонента
-		const setting_component : IFindIdComponent = this._FindIdComponent(
+		const setting_component : T_SettingsComponent = this._FindSettingsComponent(
 			text_component,
 			component_file_name
 		);
-		// Получить слова из текста компонента
-		const arr_text_translete : IFindTextFromTranslate = this._FindTextFromTranslate(
+		// 2. и 2.1
+		const {obj_text_translete_component, new_text_component} = this._FindTextTranslate_FormatCallFunction(
 			text_component,
 			component_file_name
 		);
-		// Создаем сырой `JSON`
-		const raw_json_translete : string = this._buildJson(
-			setting_component,
-			arr_text_translete,
-		);
-		// Преобразовываем `json` для записи в файл
-		return this._formatJsonFromWriteFile(component_file_name, raw_json_translete)
+		// 3.
+		const map_translate_component : T_Mapi22TTJson | null = this._FindMapTranslate(new_text_component)
+		let raw_json_map_translete_component : string = ''
+		// 3. if True
+		if (map_translate_component) {
+			raw_json_map_translete_component = this._MergeMap(
+				map_translate_component,
+				setting_component,
+				obj_text_translete_component,
+			)
+		}
+		// 3. if False
+		else {
+			raw_json_map_translete_component = this._BuildNewMap(
+				setting_component,
+				obj_text_translete_component,
+			);
+		}
+		// 4.
+		return this._AssembleComponent(new_text_component, raw_json_map_translete_component)
 	}
 	
-	protected _formatJsonFromWriteFile(component_file_name : string, raw_json_translete : string) : string {
-		let in_text_file : string = readFile(component_file_name);
-		let in_format_text_file = in_text_file.replace(
+	/* Объединить карты перевода */
+	protected _MergeMap(
+		i22TT_map_translate : T_Mapi22TTJson,
+		setting_component : T_SettingsComponent,
+		obj_text_translete : T_DictTextTransleteComponent,) : string {
+		let new_words : T_i22Json_word = {}
+		for (const _x in obj_text_translete) {
+			// Если нет объекта то создаем его
+			if (i22TT_map_translate["words"][_x] === undefined) {
+				new_words[_x] = this.__createWords_i22TT(_x, obj_text_translete, setting_component)
+			}
+			// Если он есть, то добавляем существующий объект без изменений
+			else {
+				new_words[_x] = i22TT_map_translate["words"][_x]
+			}
+		}
+		// Обновляем объект со словами
+		i22TT_map_translate["words"] = new_words
+		return JSON.stringify(i22TT_map_translate)
+	}
+	
+	/* Поиск карты перевода в компоненте */
+	protected _FindMapTranslate(text_component : string) : T_Mapi22TTJson | null {
+		let in_format_text_file = text_component.matchAll(
+			/\/\*@i22TT_MapTranslate\n\s*-{22}\s*(?<content>[\s\w\W]+)\s*-{22}\s*@ENDi22TT_MapTranslate\*\//g,
+		);
+		let res = in_format_text_file.next().value.groups["content"]
+		return res ? JSON.parse(res) : null
+	}
+	
+	
+	/* Функция для правильного форматирования вызова `i22TT.get` */
+	protected _FindTextTranslate_FormatCallFunction(text_component : string, component_file_name : string) : {
+		new_text_component : string
+		obj_text_translete_component : T_DictTextTransleteComponent;
+	} {
+		let text : string
+		let id : string
+		let hash : string
+		let groups : { text : string, id : string, hash : string }
+		let obj_text_translete : T_DictTextTransleteComponent = {};
+		let tmp : IterableIterator<RegExpMatchArray> = text_component.matchAll(
+			/i22TT.get[\s]*\([\s]*['"`](?<text>.*|\n*)['"`][\s]*,*[\s]*(?<id>\d*)[\s]*,*[\s]*(?<hash>\d*)[\s]*\)/g,
+		)
+		if (!tmp) {
+			throw `В компоненте ${component_file_name} Слов не найдено`;
+		}
+		for (const _x of tmp) {
+			// @ts-ignore
+			groups = _x["groups"]
+			if (groups) {
+				text = groups["text"]
+				id = groups["id"]
+				hash = groups["hash"]
+				if (!id && !hash) {
+					id = '1'
+					hash = String(i22TT.hash(text, Number(id)))
+				}
+				else if (!hash) {
+					hash = String(i22TT.hash(text, Number(id)))
+				}
+				// Правильно ли высчитан хеш ?
+				else if (hash != String(i22TT.hash(text, Number(id)))) {
+					hash = String(i22TT.hash(text, Number(id)))
+				}
+				// Вставляем изменение в компонент
+				text_component = text_component.replace(new RegExp(
+						`i22TT.get[\\s]*\\([\\s]*['"\`]${text}['"\`][\\s]*,*[\\s]*${groups["id"]}[\\s]*,*[\\s]*${groups["hash"]}[\\s]*\\)`),
+					`i22TT.get(\`${text}\`,${id},${hash})`,
+				)
+				obj_text_translete[hash] = [text, id,];
+			}
+			// Проверить
+			// in_text_file.matchAll(new RegExp(`i22TT.get[\\s]*\\(['"\`](?<text>${text})['"\`],*[\\s]*(?<id>${id}),*(?<hash>${hash})\\)`,'g'))
+		}
+		return {"new_text_component": text_component, "obj_text_translete_component": obj_text_translete}
+	}
+	
+	
+	/* Собрать компонент по частям */
+	protected _AssembleComponent(new_text_component : string, raw_json_translete : string) : string {
+		new_text_component = new_text_component.replace(
 			/\/\*@i22TT_MapTranslate\n[\s\w\W]+@ENDi22TT_MapTranslate\*\//g,
 			'',
 		);
 		return `
-${in_format_text_file}
+${new_text_component}
 /*@i22TT_MapTranslate
 ----------------------
 ${raw_json_translete}
@@ -112,30 +215,22 @@ ${raw_json_translete}
 @ENDi22TT_MapTranslate*/`.slice(1);
 	}
 	
+	
 	/* Создать `JSON i22TT` из данных компонента */
-	protected _buildJson(
-		setting_component : IFindIdComponent,
-		arr_text_translete : IFindTextFromTranslate,
+	protected _BuildNewMap(
+		setting_component : T_SettingsComponent,
+		obj_text_translete : T_DictTextTransleteComponent,
 	) : string {
-		
-		const create_body = () : Pick<i22TTJson, 'words'> => {
+		const create_body = () : Pick<T_Mapi22TTJson, 'words'> => {
 			// Создаем часть результирующего объекта
-			let _body : Pick<i22TTJson, 'words'> = {words: {}};
-			for (const _x of arr_text_translete) {
-				_body['words'][_x['hash_int']] = [
-					_x['text'],
-					_x['id'],
-					{
-						...this.base_arr_lange,
-						...{[setting_component['base_lange']]: _x['text']},
-					},
-				];
+			let _body : Pick<T_Mapi22TTJson, 'words'> = {words: {}};
+			for (const _x in obj_text_translete) {
+				_body['words'][_x] = this.__createWords_i22TT(_x, obj_text_translete, setting_component)
 			}
 			return _body
 		}
-		
 		// Создаем полноценный объект
-		const res_json : i22TTJson = {
+		const res_json : T_Mapi22TTJson = {
 			id_components: setting_component['id_components'],
 			base_lange: setting_component['base_lange']!,
 			...create_body(),
@@ -143,10 +238,11 @@ ${raw_json_translete}
 		return JSON.stringify(res_json, null, 2);
 	}
 	
+	
 	/* Прочитать конфигурации из файла и сохранить их в переменные */
 	protected _initConfig() : { base_arr_lange : { [p : string] : string }; base_lang : string } {
 		// Читаем файл с конфигурациями
-		const resConf : TReadConfig = this._redConfig();
+		const resConf : T_Config = this._redConfig();
 		if (resConf) {
 			return {base_arr_lange: resConf['base_arr_lange'], base_lang: resConf['base_lang']}
 		}
@@ -155,13 +251,14 @@ ${raw_json_translete}
 		}
 	}
 	
+	
 	/* Читаем файла с конфигурациями */
-	protected _redConfig() : TReadConfig {
+	protected _redConfig() : T_Config {
 		/*	Проверяем корректность конфигурации */
-		const valid_json_conf = (_text_config : IFileConf | null) : boolean => {
+		const valid_json_conf = (_text_config : T_FileConfig | null) : boolean => {
 			if (_text_config) {
 				const base_lang : string = String(_text_config['base_lang'])
-				const available_lang : T_available_lang = _text_config['available_lang']
+				const available_lang : T_AvailableLang = _text_config['available_lang']
 				// Проверяем что базовый язык добавлен в доступные языки
 				// @ts-ignore
 				if (available_lang[base_lang]) {
@@ -185,7 +282,7 @@ ${raw_json_translete}
 		}
 		
 		// Получаем данные из файла с конфигурациями
-		let text_config : IFileConf | null;
+		let text_config : T_FileConfig | null;
 		try {
 			text_config = yaml.load(readFile(this.file_conf));
 		} catch (e) {
@@ -206,11 +303,12 @@ ${raw_json_translete}
 		return null;
 	}
 	
-	/*  Поиск ID компонента в текста */
-	protected _FindIdComponent(
+	
+	/*  Поиск в тексте компонента - ID и базового языка  */
+	protected _FindSettingsComponent(
 		text_component : string,
 		component_file_name : string,
-	) : IFindIdComponent {
+	) : T_SettingsComponent {
 		let res : RegExpMatchArray | null = text_component.match(
 			/i22TT.id_components[\s]*\((?<id_components>\d+)\s*(,\s*['"`]+(?<base_lange>[\w\d]+)['"`]+)*\)/,
 		);
@@ -240,30 +338,23 @@ ${raw_json_translete}
 		Убедитесь в том что вы указали id компонента, и имя языка(на английском без пробелов)`;
 	}
 	
-	/* Поиск слов в тексте */
-	protected _FindTextFromTranslate(
-		text_find : string,
-		component_file_name : string,
-	) : IFindTextFromTranslate {
-		let tmp : IterableIterator<RegExpMatchArray> = text_find.matchAll(
-			/i22TT.get[\s]*\("*(?<text>[а-яА-Яa-zA-Z0-9 ]+)"*,*[\s]*(?<id>\d*)\)/g,
-		);
-		let res : IFindTextFromTranslate = [];
-		// @ts-ignore
-		for (let {groups} of tmp) {
-			if (groups) {
-				res.push({
-					hash_int: i22TT.hash(groups['text'], Number(groups['id'])),
-					text: groups['text'],
-					id: Number(groups['id']) > 1 ? Number(groups['id']) : 1,
-				});
-			}
-		}
-		if (res.length === 0) {
-			throw `В компоненте ${component_file_name} Слов не найдено`;
-		}
-		return res;
+	
+	/* Создать контент для `T_i22Json_word_val` */
+	protected __createWords_i22TT = (
+		key_ : string,
+		obj_text_translete : T_DictTextTransleteComponent,
+		setting_component : T_SettingsComponent,
+	) : T_i22Json_word_val => {
+		return [
+			obj_text_translete[key_][0],
+			obj_text_translete[key_][1],
+			{
+				...this.base_arr_lange,
+				...{[setting_component['base_lange']]: obj_text_translete[key_][0]},
+			},
+		];
 	}
+	
 }
 
 

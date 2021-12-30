@@ -49,7 +49,7 @@ export default HomePage;
       "hellp 2",
       1,
       {
-        "ru": "",
+        "ru": "Удалить это",
         "en": "hellp 2",
         "uk": "",
         "japan": ""
@@ -62,7 +62,7 @@ export default HomePage;
         "ru": "",
         "en": "SDW sd",
         "uk": "",
-        "japan": ""
+        "japan": "Пока мир"
       }
     ],
     "971": [
@@ -105,11 +105,11 @@ export default HomePage;
         "japan": ""
       }
     ],
-    "4492": [
+    "4509": [
       "sadqwd23ad мqdир5",
       1,
       {
-        "ru": "",
+        "ru": "Првиет мир1",
         "en": "sadqwd23ad мqdир5",
         "uk": "",
         "japan": ""
