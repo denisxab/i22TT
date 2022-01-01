@@ -4,7 +4,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { i22TT } from "../../../../../../../WebstormProjects/i22TT/AllTranslete";
 
 
-i22TT.id_components(22, 'Russuan_Moskow')
+i22TT.id_component(22, 'Russuan_Moskow')
 {i22TT.get("Приветмир 2")}
 {i22TT.get("Приветмир1")}
 {i22TT.get("Приветмир 3")}

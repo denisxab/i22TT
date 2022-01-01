@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Container, Row } from "react-bootstrap";
 import { i22TT } from "../../../../../../../WebstormProjects/i22TT/AllTranslete";
 
-i22TT.id_components(22,'ru')
+i22TT.id_component(22,'ru')
 {i22TT.get ("Приветмир 2") }
 {i22TT.get("Приветмир1")}
 {i22TT.get("Приветмир 3")}
@@ -35,7 +35,7 @@ export default HomePage;
 /*@i22TT_MapTranslate
 ----------------------
 {
-  "id_components": 22,
+  "id_component": 22,
   "base_lange": "ru",
   "words": {
     "7643": [

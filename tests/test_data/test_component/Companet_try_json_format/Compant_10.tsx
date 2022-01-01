@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Container, Row } from "react-bootstrap";
 import { i22TT } from "../../../../../../../WebstormProjects/i22TT/AllTranslete";
 
-i22TT.id_components(33,'en')
+i22TT.id_component(33,'en')
 {i22TT.get ("hellp 2") }
 {i22TT.get("asdsd dads")}
 {i22TT.get("21323asadasd 3")}
@@ -42,7 +42,7 @@ export default HomePage;
 /*@i22TT_MapTranslate
 ----------------------
 {
-  "id_components": 33,
+  "id_component": 33,
   "base_lange": "en",
   "words": {
     "615": [

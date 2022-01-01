@@ -2,19 +2,23 @@ import React from 'react';
 import { Col, Container, Row } from "react-bootstrap";
 import { i22TT } from "../../../../../../../WebstormProjects/i22TT/AllTranslete";
 
-i22TT.id_components('ru')
-{i22TT.get ("Приветмир 2") }
-{i22TT.get("Приветмир1")}
-{i22TT.get("Приветмир 3")}
+i22TT.id_component(22,'ru')
+{i22TT.get( " сон и сосны \t ")}
+{ i22TT.get ("Дом") }
+{i22TT.get("Мебель и стены")}
+{ i22TT.get (" Паркет ") }
+{i22TT.get( " сон и сосны \t ")}
+{i22TT.get("День и ноч 3" )}
 
 function HomePage(props : any) {
 	
-	
+	i22TT.get ("Дым и  ")
+	i22TT.get("Как тут тестить код")
 	return (
 		<div>
 			{i22TT.get("Привет мир4")}
-			<h1>{i22TT.get("Привет мир64")}</h1>
-			{i22TT.get("Привет мир45",  62)}
+			<h1>{i22TT.get("Привет мир64",1,231)}</h1>
+			{i22TT.get("Привет мир45",  62, 123123)}
 			{i22TT.get("День мир5")}
 			<Container>
 				<Row>

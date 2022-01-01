@@ -2,20 +2,15 @@ import React from 'react';
 import { Col, Container, Row } from "react-bootstrap";
 import { i22TT } from "../../../../../../../WebstormProjects/i22TT/AllTranslete";
 
-i22TT.id_components(3265)
-{i22TT.get ("Приветмир 2") }
-{i22TT.get("Приветмир1")}
-{i22TT.get("Приветмир 3")}
+i22TT.id_component('ru')
+
 
 function HomePage(props : any) {
 	
 	
 	return (
 		<div>
-			{i22TT.get("Привет мир4")}
-			<h1>{i22TT.get("Привет мир64")}</h1>
-			{i22TT.get("Привет мир45",  62)}
-			{i22TT.get("День мир5")}
+
 			<Container>
 				<Row>
 					<Col>1 of 2</Col>
@@ -32,5 +27,3 @@ function HomePage(props : any) {
 }
 
 export default HomePage;
-
-

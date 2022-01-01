@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Container, Row } from "react-bootstrap";
 import { i22TT } from "../../../../../../../WebstormProjects/i22TT/AllTranslete";
 
-i22TT.id_component(265)
+i22TT.id_component(3265)
 {i22TT.get ("Приветмир 2") }
 {i22TT.get("Приветмир1")}
 {i22TT.get("Приветмир 3")}

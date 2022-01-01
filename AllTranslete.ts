@@ -37,9 +37,9 @@ export class i22TT {
 	}
 	
 	/* Указать id компонента */
-	public static id_components(id_components : number, base_lang : string) : void {
+	public static id_component(id_component : number, base_lang : string) : void {
 		/* Получим ID используемого компонента */
-		console.log("ID COMPONENT: ", id_components)
+		console.log("ID COMPONENT: ", id_component)
 		console.log("Base lang: ", base_lang)
 	}
 }
