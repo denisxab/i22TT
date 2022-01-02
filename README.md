@@ -59,7 +59,7 @@
   ----------------------
   {
     "22": {
-      "base_lange": "ru",
+      "base_lang": "ru",
       "words": {
         "4301": [
           "Вход",
@@ -152,11 +152,11 @@
 - Получить отформатированный компонент. Первым позиционным аргументом нужно передать абсолютный путь к компоненту, или
   вы можете указать его через аргумент `--component`
   ```bash
-  ts-node pull_data.ts --component ПутьК_Файлу.tsx
+  ts-node parse_component.ts --component ПутьК_Файлу.tsx
   ```
 
 - Для того чтобы сохранить результат в текущий компонент, добавите аргумент `--save`
   ```bash
-  ts-node pull_data.ts --component ПутьК_Файлу.tsx --save
+  ts-node parse_component.ts --component ПутьК_Файлу.tsx --save
   ```
   

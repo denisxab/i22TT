@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { i22TT_Json, T_DictTextTransleteComponent, T_SettingsComponent } from "../pull_data_from_component/pull_data";
+import { i22TT_Json, T_DictTextTransleteComponent, T_SettingsComponent } from "../parse_component";
 import { readFile } from "../helpful";
 
 const fs = require('fs');
@@ -76,6 +76,7 @@ describe("Финальная проверка `run`", () => {
 				`/home/denis/WebstormProjects/i22TT/tests/test_data/test_component/component_try/Compant_3.tsx`,
 				`/home/denis/WebstormProjects/i22TT/tests/test_data/test_component/component_try/Compant_4.tsx`,
 				`/home/denis/WebstormProjects/i22TT/tests/test_data/test_component/component_try/Compant_6.tsx`,
+				`/home/denis/WebstormProjects/i22TT/tests/test_data/test_component/component_try/Compant_7.tsx`,
 			],
 		]
 		// Компоненты
@@ -85,6 +86,7 @@ describe("Финальная проверка `run`", () => {
 			`${__dirname}/test_data/test_component/component/Compant_3.tsx`,
 			`${__dirname}/test_data/test_component/component/Compant_4.tsx`,
 			`${__dirname}/test_data/test_component/component/Compant_6.tsx`,
+			`${__dirname}/test_data/test_component/component/Compant_7.tsx`,
 		]
 		TwoZip<string, string, string>(arr_config, arr_comp, try_arr, (_path_conf : string, _path_comp : string, try_arr : string) => {
 			obj_i22TT = new TEST_i22TT_Json(_path_conf)
@@ -221,7 +223,7 @@ describe("FindSettingsComponent", () => {
 	})
 	
 	test("Проверка нахождения id и базового языка у компонента", () => {
-		type tmp = Array<Array<{ id_component : number, base_lange : string }>>
+		type tmp = Array<Array<{ id_component : number, base_lang : string }>>
 		// Конфигурации
 		let arr_config : string[] = [
 			`${__dirname}/test_data/test_conf/try/i22TT_1.conf.yaml`,
@@ -231,16 +233,16 @@ describe("FindSettingsComponent", () => {
 		// Верные ответы
 		let try_arr : tmp = [
 			[
-				{id_component: 22, base_lange: 'ru'},
-				{id_component: 33, base_lange: "en"},
-				{id_component: 265, base_lange: 'ru'},
-				{id_component: 3265, base_lange: 'ru'},
+				{id_component: 22, base_lang: 'ru'},
+				{id_component: 33, base_lang: "en"},
+				{id_component: 265, base_lang: 'ru'},
+				{id_component: 3265, base_lang: 'ru'},
 			],
 			[
-				{id_component: 22, base_lange: 'ru'},
-				{id_component: 33, base_lange: "en"},
-				{id_component: 265, base_lange: 'en'},
-				{id_component: 3265, base_lange: 'en'},
+				{id_component: 22, base_lang: 'ru'},
+				{id_component: 33, base_lang: "en"},
+				{id_component: 265, base_lang: 'en'},
+				{id_component: 3265, base_lang: 'en'},
 			]
 		]
 		// Компоненты
@@ -516,6 +518,18 @@ describe("FindTextTranslate_FormatCallFunction`", () => {
 	})
 })
 
+describe("Проверка объединения файлов", () => {
+	
+	
+	// Эта функция будет вызваться каждый раз при функции теста
+	beforeEach(() => {
+	
+	})
+	
+	test("", () => {
+		i22TT_Json.MargeComponentMap("ke", "asdq", "qweqwe")
+	})
+})
 
 // describe("buildJson", () => {
 //

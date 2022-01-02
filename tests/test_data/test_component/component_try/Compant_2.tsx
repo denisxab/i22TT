@@ -33,13 +33,14 @@ function HomePage(props : any) {
 
 export default HomePage;
 
+
 /* Ghb */
 // asdds
 /*@i22TT_MapTranslate
 ----------------------
 {
   "33": {
-    "base_lange": "en",
+    "base_lang": "en",
     "words": {
       "622": [
         "hellp 2",

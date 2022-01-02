@@ -47,7 +47,7 @@ export default HomePage;
 ----------------------
 {
   "22": {
-    "base_lange": "en",
+    "base_lang": "en",
     "words": {
       "5401": [
         "Входы",

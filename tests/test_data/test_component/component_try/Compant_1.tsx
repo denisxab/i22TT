@@ -40,7 +40,7 @@ export default HomePage;
 ----------------------
 {
   "22": {
-    "base_lange": "ru",
+    "base_lang": "ru",
     "words": {
       "3217": [
         "Дом",

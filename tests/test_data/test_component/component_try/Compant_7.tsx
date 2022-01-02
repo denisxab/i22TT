@@ -3,7 +3,7 @@ import React from 'react';
 import {Col, Container, Row} from 'react-bootstrap';
 import {i22TT} from '/home/denis/WebstormProjects/i22TT/AllTranslete.ts';
 
-i22TT.id_component(22, 'en');
+i22TT.id_component(22, 'ru');
 
 {
 	i22TT.get(`Заголовок`,1,9700);
@@ -21,7 +21,7 @@ function HomePage(props: any) {
 			{i22TT.get(`Сделай это`,1,9765)}
 			{i22TT.get(`Сделай это`,1,9765)}
 			{i22TT.get(`Сделай это`,1,9765)}
-			{i22TT.get(`Сделай это`,3,9785)}
+			{i22TT.get(`Сделай это`,1,9765)}
 			{i22TT.get(`Сделай это`,2,9775)}
 			<h1>{i22TT.get(`Информация`,1,10842)}</h1>
 			{i22TT.get(`Регистрация`,1,11915)}
@@ -42,11 +42,12 @@ function HomePage(props: any) {
 }
 
 export default HomePage;
+
 /*@i22TT_MapTranslate
 ----------------------
 {
   "22": {
-    "base_lang": "en",
+    "base_lang": "ru",
     "words": {
       "5401": [
         "Входы",
@@ -54,7 +55,7 @@ export default HomePage;
         {
           "ru": "Входы",
           "en": "Enter",
-          "uk": "Вiды",
+          "uk": "",
           "japan": ""
         }
       ],
@@ -63,9 +64,9 @@ export default HomePage;
         1,
         {
           "ru": "Имя сайта",
-          "en": "Name site",
+          "en": "",
           "uk": "",
-          "japan": "ASDD!231"
+          "japan": ""
         }
       ],
       "9700": [
@@ -83,7 +84,7 @@ export default HomePage;
         1,
         {
           "ru": "Сделай это",
-          "en": "Just do it",
+          "en": "",
           "uk": "",
           "japan": ""
         }
@@ -94,16 +95,6 @@ export default HomePage;
         {
           "ru": "Сделай это",
           "en": "",
-          "uk": "",
-          "japan": ""
-        }
-      ],
-      "9785": [
-        "Сделай это",
-        3,
-        {
-          "ru": "",
-          "en": "Сделай это",
           "uk": "",
           "japan": ""
         }

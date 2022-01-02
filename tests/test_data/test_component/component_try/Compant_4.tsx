@@ -39,7 +39,7 @@ export default HomePage;
 ----------------------
 {
   "3265": {
-    "base_lange": "ru",
+    "base_lang": "ru",
     "words": {
       "7652": [
         "День мир5",
