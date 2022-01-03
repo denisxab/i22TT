@@ -2,11 +2,6 @@ import { i22TT } from './AllTranslete';
 import { readFile, writeFile } from './helpful';
 import { verificationArgs } from "./front_logic";
 
-/*
- * TODO: Документация использования
- *
- *
- * */
 
 const yaml = require('js-yaml');
 const fs = require('fs');
