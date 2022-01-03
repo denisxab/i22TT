@@ -1,11 +1,10 @@
 import { i22TT } from './AllTranslete';
-import { readFile } from './helpful';
+import { readFile, writeFile } from './helpful';
+import { verificationArgs } from "./front_logic";
 
 /*
  * TODO: Документация использования
  *
- * TODO: Создание общего файла с картами перевода со всех компонентов
- * TODO: Сделать возможным указание папки в которой нужно найти укатанные расширения и создать карты
  *
  * */
 
@@ -77,12 +76,13 @@ export class i22TT_Json {
 		this.base_lang = res["base_lang"]
 	}
 	
-	public MargeComponentMap(...names_components : Array<string>) : string {
+	/* Объединить карты перевода у компонентов */
+	public MergeComponentMap(...names_components : Array<string>) : string {
 		/*
-		 * 1. Прочитать файл с компонентом
-		 * 2. Получить карту перевода
-		 *   if True:
-		 *       Распарсить карту и добавить данные в общий массив
+		 * 1. Прочитать файл с компонентом          >(readFile(path))
+		 * 2. Получить карту перевода и
+		 *    распарсить карту и добавить данные в
+		 *    общий массив                          >(this._FindMapTranslate)
 		 *   if False:
 		 *       Вызвать ошибку
 		 * 3. Объединить карты в один `JSON`
@@ -91,10 +91,9 @@ export class i22TT_Json {
 		// Переменная для информативного вывода в случае ошибки одинаковых `id` у компонентов
 		let path_map_component : { [key : number] : string } = {}
 		let arr_text_component : T_Mapi22TTJson = {}
-		let tmp : T_Mapi22TTJson | null = null
 		names_components.map((path) => {
-				// 1.
-				tmp = this._FindMapTranslate(readFile(path))
+				// 1. и  2.
+				let tmp : T_Mapi22TTJson | null = this._FindMapTranslate(readFile(path))
 				// if False:
 				if (!tmp) {
 					throw `Карта перевода не найдена: [${path}]`
@@ -112,7 +111,7 @@ export class i22TT_Json {
 	}
 	
 	/* Запуск скрипта */
-	public run(component_file_name : string) : string {
+	public run(component_file_name : string, isSave : boolean = false) : string {
 		/*
 		 * 0. Чтение и парсинг конфигурации                                     >(Конструктор())
 		 * 1. Чтение текста и парсинг настроек компонента                       >(this._FindSettingsComponent())
@@ -125,7 +124,8 @@ export class i22TT_Json {
 		 *      - добавлять новые слова в карту
 		 *      - не добавлять бесхозные хеш
 		 * 4. Собрать детали компонента воедино                                 >(this._formatJsonFromWriteFile)
-		 */
+		 * 5. Если необходимо то можно сохранить результат в текущий компонент  >(isSave)
+		 * */
 		
 		// 1.
 		const text_component : string = readFile(component_file_name);
@@ -158,7 +158,14 @@ export class i22TT_Json {
 			);
 		}
 		// 4.
-		return this._AssembleComponent(new_text_component, raw_json_map_translete_component)
+		const res : string = this._AssembleComponent(new_text_component, raw_json_map_translete_component)
+		// 5.
+		if (isSave) {
+			writeFile(component_file_name, res)
+			return res
+		}
+		return res
+		
 	}
 	
 	/* Объединить карты перевода */
@@ -401,35 +408,6 @@ ${raw_json_translete}
 	}
 }
 
-
-function verificationArgs(argsTerminal : any) {
-	/*
-	 * --conf =  Путь к файлу с конфигурациями
-	 * --save = Сохранить результат в текущий компонент
-	 * --component = Переопределить компонент
-	 * --no_output = Не отображать результат в консоль
-	 */
-	
-	// Путь к файлу с конфигурациями
-	const conf : string = argsTerminal['conf'] ? argsTerminal['conf'] : CONFIG_FILE_NAME
-	// Путь к компоненту
-	const component : string = argsTerminal['component'] ? argsTerminal['component'] : argsTerminal['_'][0]
-	// Нужно ли сохранять результат в текущий компонент
-	const isSave : boolean = argsTerminal['save']
-	// Нужно ли выводить данные в терминал
-	const isOutput : boolean = !argsTerminal["no_output"]
-	
-	// Логика
-	const i22TT = new i22TT_Json(conf);
-	const res = i22TT.run(component)
-	if (isOutput) {
-		console.log(res)
-	}
-	if (isSave) {
-		fs.writeFileSync(component, res)
-	}
-	
-}
 
 if (require.main === module) {
 	console.log(argsTerminal)

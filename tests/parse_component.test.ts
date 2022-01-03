@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { i22TT_Json, T_DictTextTransleteComponent, T_SettingsComponent } from "../parse_component";
-import { readFile } from "../helpful";
+import { getPathComponentFromFolder, readFile } from "../helpful";
 
 const fs = require('fs');
 
@@ -552,7 +552,7 @@ describe("Проверка объединения файлов `MargeComponentMa
 		]
 		// Логика
 		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
-		const res : string = obj_i22TT.MargeComponentMap(
+		const res : string = obj_i22TT.MergeComponentMap(
 			`${__dirname}/test_data/test_marge/Compant_1.tsx`,
 			`${__dirname}/test_data/test_marge/Compant_2.tsx`,
 			`${__dirname}/test_data/test_marge/Compant_3.tsx`,
@@ -573,7 +573,7 @@ describe("Проверка объединения файлов `MargeComponentMa
 		// Логика
 		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
 		try {
-			const res : string = obj_i22TT.MargeComponentMap(
+			const res : string = obj_i22TT.MergeComponentMap(
 				`${__dirname}/test_data/test_marge/Compant_1.tsx`,
 				`${__dirname}/test_data/test_marge/Compant_1_1.tsx`,
 			)
@@ -595,13 +595,32 @@ describe("Проверка объединения файлов `MargeComponentMa
 		// Логика
 		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
 		try {
-			const res : string = obj_i22TT.MargeComponentMap(
+			const res : string = obj_i22TT.MergeComponentMap(
 				`${__dirname}/test_data/test_marge/Compant_4.tsx`,
 			)
 			throw "!!!"
 		} catch (e) {
 			expect(e).toMatch(try_[0])
 		}
+	})
+})
+
+describe("", () => {
+	
+	
+	test("", () => {
+		// Конфигурации
+		let arr_config : string[] = [
+			`${__dirname}/test_data/test_conf/try/i22TT_1.conf.yaml`,
+		]
+		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
+		
+		let res
+		for (const _x of getPathComponentFromFolder(`/home/denis/WebstormProjects/i22TT/tests/test_data/test_component/component_try`)) {
+			res = obj_i22TT.run(_x)
+			console.log(res)
+		}
+		
 	})
 })
 
