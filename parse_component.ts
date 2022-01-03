@@ -3,7 +3,10 @@ import { readFile } from './helpful';
 
 /*
  * TODO: Документация использования
- * TODO: Создание общего файла с карами перевода со всех компонентов
+ *
+ * TODO: Создание общего файла с картами перевода со всех компонентов
+ * TODO: Сделать возможным указание папки в которой нужно найти укатанные расширения и создать карты
+ *
  * */
 
 const yaml = require('js-yaml');
@@ -28,7 +31,7 @@ export type T_Mapi22TTJson = {
 }
 type T_Mapi22TTJson_context = {
 	base_lang : string;
-	words : T_i22Json_word
+	words : T_i22Json_word;
 }
 type T_i22Json_word = { [key : string] : T_i22Json_word_val; }
 type T_i22Json_word_val = [string, number, { [key : string] : string }]
@@ -74,18 +77,38 @@ export class i22TT_Json {
 		this.base_lang = res["base_lang"]
 	}
 	
-	public static MargeComponentMap(...names_components : Array<string>) {
+	public MargeComponentMap(...names_components : Array<string>) : string {
 		/*
-		* 1. Прочитать файл с компонентом
-		* 2. Получить карту перевода
-		*   if True:
-		*       Распарсить карту и добавить данные в общий массив
-		*   if False:
-		*       Вызвать ошибку
-		* 3. Обеденить
-		*
-		* */
-		console.log(names_components)
+		 * 1. Прочитать файл с компонентом
+		 * 2. Получить карту перевода
+		 *   if True:
+		 *       Распарсить карту и добавить данные в общий массив
+		 *   if False:
+		 *       Вызвать ошибку
+		 * 3. Объединить карты в один `JSON`
+		 * */
+		
+		// Переменная для информативного вывода в случае ошибки одинаковых `id` у компонентов
+		let path_map_component : { [key : number] : string } = {}
+		let arr_text_component : T_Mapi22TTJson = {}
+		let tmp : T_Mapi22TTJson | null = null
+		names_components.map((path) => {
+				// 1.
+				tmp = this._FindMapTranslate(readFile(path))
+				// if False:
+				if (!tmp) {
+					throw `Карта перевода не найдена: [${path}]`
+				}
+				// if False:
+				if (arr_text_component[Number(Object.keys(tmp)[0])] !== undefined) {
+					throw `У компонентов [${path}]===[${path_map_component[Number(Object.keys(tmp)[0])]}] одинаковые id [${Object.keys(tmp)[0]}]`
+				}
+				path_map_component[Number(Object.keys(tmp)[0])] = path
+				//	3.
+				arr_text_component = Object.assign(arr_text_component, tmp);
+			}
+		)
+		return JSON.stringify(arr_text_component, null, 2)
 	}
 	
 	/* Запуск скрипта */
@@ -257,7 +280,8 @@ ${raw_json_translete}
 			[setting_component['id_component']]:
 				{
 					base_lang: setting_component['base_lang'],
-					...create_body()
+					...create_body(),
+					
 				}
 		}
 		return JSON.stringify(res_json, null, 2);

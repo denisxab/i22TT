@@ -19,24 +19,6 @@ const TwoZip = <T1, T2, T3>(zip_1 : Array<T1>, zip_2 : Array<T2>, try_arr_arr : 
 
 class TEST_i22TT_Json extends i22TT_Json {
 	
-	
-	// public formatJsonFromWriteFile(text_component : string, raw_json_translete : string) : string {
-	// 	return this._formatJsonFromWriteFile(text_component, raw_json_translete)
-	//
-	// }
-	//
-	
-	//
-	// public initConfig() : { base_arr_lange : { [p : string] : string }; base_lang : string } {
-	// 	return this._InitConfig()
-	//
-	// }
-	//
-	// public redConfig() : T_Config {
-	// 	return this._ReadConfig()
-	//
-	// }
-	
 	public buildNewMap(setting_component : T_SettingsComponent, obj_text_translete : T_DictTextTransleteComponent) : string {
 		return this._BuildNewMap(setting_component, obj_text_translete)
 		
@@ -152,6 +134,7 @@ describe("initConfig / redConfig", () => {
 			arr_config, try_arr, (_path_conf : string, try_ : RegExp) => {
 				try {
 					new TEST_i22TT_Json(_path_conf)
+					throw "!!!"
 				} catch (e) {
 					expect(e).toMatch(try_)
 				}
@@ -189,7 +172,9 @@ describe("initConfig / redConfig", () => {
 			function (_input, _out) {
 				try {
 					obj_i22TT = new TEST_i22TT_Json(_input)
+					throw "!!!"
 				} catch (e) {
+					
 					expect(e).toMatch(_out)
 				}
 			})
@@ -208,6 +193,7 @@ describe("initConfig / redConfig", () => {
 			function (_input, _out) {
 				try {
 					obj_i22TT = new TEST_i22TT_Json(_input)
+					throw "!!!"
 				} catch (e) {
 					expect(e).toMatch(_out)
 				}
@@ -228,21 +214,48 @@ describe("FindSettingsComponent", () => {
 		let arr_config : string[] = [
 			`${__dirname}/test_data/test_conf/try/i22TT_1.conf.yaml`,
 			`${__dirname}/test_data/test_conf/try/i22TT_2.conf.yaml`,
-			// `${__dirname}/test_data/test_conf/i22TT_3.conf.yaml`,
 		]
 		// Верные ответы
 		let try_arr : tmp = [
 			[
-				{id_component: 22, base_lang: 'ru'},
-				{id_component: 33, base_lang: "en"},
-				{id_component: 265, base_lang: 'ru'},
-				{id_component: 3265, base_lang: 'ru'},
+				{
+					id_component: 22,
+					base_lang: 'ru',
+				},
+				{
+					id_component: 33,
+					base_lang: "en",
+				},
+				{
+					id_component: 265,
+					base_lang: 'ru',
+				},
+				{
+					id_component: 3265,
+					base_lang: 'ru',
+					
+				},
 			],
 			[
-				{id_component: 22, base_lang: 'ru'},
-				{id_component: 33, base_lang: "en"},
-				{id_component: 265, base_lang: 'en'},
-				{id_component: 3265, base_lang: 'en'},
+				{
+					id_component: 22,
+					base_lang: "ru",
+				},
+				{
+					id_component: 33,
+					base_lang: "en",
+					
+				},
+				{
+					id_component: 265,
+					base_lang: 'en',
+					
+				},
+				{
+					id_component: 3265,
+					base_lang: 'en',
+					
+				},
 			]
 		]
 		// Компоненты
@@ -287,6 +300,7 @@ describe("FindSettingsComponent", () => {
 			obj_i22TT = new TEST_i22TT_Json(_path_conf)
 			try {
 				obj_i22TT.FindSettingsComponent(readFile(_path_comp), _path_comp)
+				throw "!!!"
 			} catch (e) {
 				expect(e).toMatch(_try_text)
 			}
@@ -302,7 +316,8 @@ describe("FindSettingsComponent", () => {
 		]
 		
 		// Верные ответы
-		let try_arr : Array<Array<RegExp>> = [[/Ошибка настройки компонента[\w\W]+неразрешен в конфигурациях[\w\W]+/
+		let try_arr : Array<Array<RegExp>> = [[
+			/[\w\W]+Ошибка настройки компонента[\w\W]+неразрешен в конфигурациях[\w\W]+/g
 		]]
 		// Компоненты
 		let arr_comp : string[] = [
@@ -312,7 +327,6 @@ describe("FindSettingsComponent", () => {
 			_path_conf : string,
 			_path_comp : string,
 			_try_text : RegExp) => {
-			obj_i22TT = new TEST_i22TT_Json(_path_conf)
 			obj_i22TT = new TEST_i22TT_Json(_path_conf)
 			try {
 				obj_i22TT!.FindSettingsComponent(readFile(_path_comp), _path_comp)
@@ -518,16 +532,76 @@ describe("FindTextTranslate_FormatCallFunction`", () => {
 	})
 })
 
-describe("Проверка объединения файлов", () => {
+
+describe("Проверка объединения файлов `MargeComponentMap`", () => {
 	
 	
 	// Эта функция будет вызваться каждый раз при функции теста
 	beforeEach(() => {
-	
+		obj_i22TT = undefined
 	})
 	
-	test("", () => {
-		i22TT_Json.MargeComponentMap("ke", "asdq", "qweqwe")
+	test("Корректный вариант объединения компонентов", () => {
+		// Конфигурации
+		let arr_config : string[] = [
+			`${__dirname}/test_data/test_conf/try/i22TT_1.conf.yaml`,
+		]
+		// Верный ответ
+		let try_ : Array<string> = [
+			`${__dirname}/test_data/test_marge/try_json.json`
+		]
+		// Логика
+		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
+		const res : string = obj_i22TT.MargeComponentMap(
+			`${__dirname}/test_data/test_marge/Compant_1.tsx`,
+			`${__dirname}/test_data/test_marge/Compant_2.tsx`,
+			`${__dirname}/test_data/test_marge/Compant_3.tsx`,
+		)
+		expect(res).toEqual(readFile(try_[0]))
+	})
+	
+	test("Что если передать компоненты с одинаковыми `id`", () => {
+		// Конфигурации
+		let arr_config : string[] = [
+			`${__dirname}/test_data/test_conf/try/i22TT_1.conf.yaml`,
+		]
+		// Верный ответ
+		let try_ : Array<RegExp> = [
+			/У компонентов [\w\W]+Compant_1_1.tsx[\w\W]+===[\w\W]+Compant_1.tsx[\w\W]+ одинаковые id [\w\W]+22[\w\W]+/
+		
+		]
+		// Логика
+		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
+		try {
+			const res : string = obj_i22TT.MargeComponentMap(
+				`${__dirname}/test_data/test_marge/Compant_1.tsx`,
+				`${__dirname}/test_data/test_marge/Compant_1_1.tsx`,
+			)
+			throw "!!!"
+		} catch (e) {
+			expect(e).toMatch(try_[0])
+		}
+	})
+	
+	test("Что если передать компонент без карты", () => {
+		// Конфигурации
+		let arr_config : string[] = [
+			`${__dirname}/test_data/test_conf/try/i22TT_1.conf.yaml`,
+		]
+		// Верный ответ
+		let try_ : Array<RegExp> = [
+			/Карта перевода не найдена:[\w\W]+/g
+		]
+		// Логика
+		obj_i22TT = new TEST_i22TT_Json(arr_config[0])
+		try {
+			const res : string = obj_i22TT.MargeComponentMap(
+				`${__dirname}/test_data/test_marge/Compant_4.tsx`,
+			)
+			throw "!!!"
+		} catch (e) {
+			expect(e).toMatch(try_[0])
+		}
 	})
 })
 
